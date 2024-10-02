@@ -1,22 +1,29 @@
+from typing import List, Optional
 from maze.environment import State, make_move
 
 
-def dfs(state: State, path: list = [], actions: list = []):
-    position = tuple(state.position)
+# Функция поиска в глубину
+def dfs(initial_state: State) -> Optional[List[int]]:
+    visited = set()  # Храним все посещённые состояния
+    stack = [(initial_state, [])]  # Каждый элемент: (текущее состояние, путь действий)
 
-    if not state.valid or position in path:
-        return None
+    while stack:
+        current_state, path = stack.pop()
 
-    path.append(position)
+        # Проверяем, достигнуто ли целевое состояние
+        if current_state.finished:
+            return path
 
-    if state.finished:
-        return path, actions
+        # Добавляем текущее состояние в посещённые
+        visited.add(current_state)
 
-    for action in range(4):  # Проверяем все возможные движения
-        next_state = make_move(state, action)
-        result = dfs(next_state, path, actions + [action])
-        if result is not None:
-            return result
+        # Генерируем все возможные действия (0-3)
+        for action in range(4):
+            next_state = make_move(current_state, action)
 
-    path.pop()  # Возврат, если путь не найден
-    return None
+            # Если новое состояние валидно и не посещено ранее
+            if next_state and next_state.valid and next_state not in visited:
+                # Добавляем новое состояние в стек с обновлённым путём
+                stack.append((next_state, path + [action]))
+
+    return None  # Решение не найдено

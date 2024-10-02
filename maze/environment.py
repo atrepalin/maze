@@ -53,6 +53,12 @@ class State:
             self.position[1], self.position[0], "rs", markersize=4
         )  # Отметка стартовой позиции
 
+    def __eq__(self, value: "State") -> bool:
+        return (self.position == value.position).all()
+
+    def __hash__(self) -> int:
+        return hash(tuple(self.position))
+
 
 action_map = {0: [0, 1], 1: [0, -1], 2: [1, 0], 3: [-1, 0]}
 

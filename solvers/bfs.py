@@ -1,28 +1,37 @@
 from collections import deque
+from typing import List, Optional
 
 from maze.environment import State, make_move
 
 
-def bfs(state: State):
-    queue = deque([(state, [], [])])  # (текущее состояние, путь, действия)
-    visited = set()  # Для отслеживания посещенных состояний
+# Функция поиска в ширину
+def bfs(initial_state: State) -> Optional[List[int]]:
+    visited = set()  # Храним все посещённые состояния
+    queue = deque(
+        [(initial_state, [])]
+    )  # Каждый элемент: (текущее состояние, путь действий)
 
     while queue:
-        current_state, path, actions = queue.popleft()
+        current_state, path = queue.popleft()
 
-        position = tuple(current_state.position)
+        # Проверяем, достигнуто ли целевое состояние
+        if current_state.finished:
+            return path
 
-        if not current_state.valid or position in visited:
+        # Пропускаем, если это состояние уже было посещено
+        if current_state in visited:
             continue
 
-        visited.add(position)
-        path.append(position)
+        # Добавляем текущее состояние в посещённые
+        visited.add(current_state)
 
-        if current_state.finished:
-            return path, actions
-
-        for action in range(4):  # Проверяем все возможные движения
+        # Генерируем все возможные действия (0-3)
+        for action in range(4):
             next_state = make_move(current_state, action)
-            queue.append((next_state, path.copy(), actions + [action]))
 
-    return None
+            # Если новое состояние валидно и не посещено ранее
+            if next_state and next_state.valid and next_state not in visited:
+                # Добавляем новое состояние в очередь с обновлённым путём
+                queue.append((next_state, path + [action]))
+
+    return None  # Решение не найдено
