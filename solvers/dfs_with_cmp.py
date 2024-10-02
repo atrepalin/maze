@@ -1,17 +1,9 @@
-from typing import Callable, List, Optional
-import numpy as np
+from typing import List, Optional
 from maze.environment import State, make_move
-from functools import cmp_to_key
-
-
-def distance(state: State):
-    return np.linalg.norm(state.position - state.goal)
 
 
 # Функция поиска в глубину
-def dfs_with_cmp(
-    initial_state: State, rate: Callable[[State], float]
-) -> Optional[List[int]]:
+def dfs_with_cmp(initial_state: State) -> Optional[List[int]]:
     visited = set()  # Храним все посещённые состояния
     stack = [(initial_state, [])]  # Каждый элемент: (текущее состояние, путь действий)
 
@@ -28,11 +20,8 @@ def dfs_with_cmp(
         # Генерируем все возможные действия (0-3)
         next_actions = list(range(4))
 
-        comparator = lambda x, y: rate(make_move(initial_state, x)) - rate(
-            make_move(initial_state, y)
-        )
-
-        next_actions.sort(key=cmp_to_key(comparator))
+        # Сортируем возможные действия так, чтобы робот был ближе к цели
+        next_actions.sort(key=lambda action: make_move(current_state, action))
 
         for action in next_actions:
             next_state = make_move(current_state, action)

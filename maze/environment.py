@@ -59,6 +59,11 @@ class State:
     def __hash__(self) -> int:
         return hash(tuple(self.position))
 
+    def __lt__(self, value: "State") -> int:
+        return np.linalg.norm(self.position - self.goal) < np.linalg.norm(
+            value.position - value.goal
+        )
+
 
 action_map = {0: [0, 1], 1: [0, -1], 2: [1, 0], 3: [-1, 0]}
 
