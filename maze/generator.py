@@ -6,7 +6,14 @@ import numpy as np
 
 
 def generate(w=10, h=10):
-    # Инициализация лабиринта, заполненного нулями (0 - стена)
+    """
+    Генерирует случайный лабиринт с помощью алгоритма поиска в глубину.
+    
+    :param w: ширина лабиринта
+    :param h: высота лабиринта
+    :return: сгенерированный лабиринт в виде матрицы NumPy, 
+             где 0 - путь, 1 - стена
+    """
     maze = [[0 for _ in range(w)] for _ in range(h)]
 
     # Направления движения: вверх, вправо, вниз, влево
@@ -89,10 +96,22 @@ def generate(w=10, h=10):
 
 
 def save(maze, filename):
+    """
+    Сохраняет лабиринт в файл filename.
+    
+    :param maze: лабиринт в виде матрицы NumPy
+    :param filename: имя файла, в который будет сохранён лабиринт
+    """
     np.save(filename, maze)
 
 
 def load(filename):
+    """
+    Загружает лабиринт из файла filename.
+    
+    :param filename: имя файла, из которого будет загружен лабиринт
+    :return: лабиринт в виде матрицы NumPy
+    """
     return np.load(filename)
 
 

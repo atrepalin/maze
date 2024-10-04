@@ -7,7 +7,16 @@ fig, ax = plt.subplots()
 
 class State:
     def __init__(self, maze, position, goal):
-        # Получаем размеры лабиринта
+        """
+        Создаёт экземпляр класса State, хранящий информацию о состоянии лабиринта.
+        
+        :param maze: матрица, представляющая лабиринт
+        :type maze: numpy 2D array
+        :param position: координаты стартовой позиции
+        :type position: numpy 1D array
+        :param goal: координаты целевой позиции
+        :type goal: numpy 1D array
+        """
         y = len(maze)
         x = len(maze[0])
 
@@ -20,17 +29,37 @@ class State:
         self.maze = maze
 
     def check_boundaries(self, position):
-        # Проверяем, выходит ли позиция за границы лабиринта
+        """ Проверяет, находится ли position за пределами лабиринта.
+
+        :param position: координаты, которые необходимо проверить
+        :type position: numpy 1D array
+        :return: True, если position за пределами, False - иначе
+        :rtype: bool
+        """
+        
         out = len([num for num in position if num < 0])
         out += len([num for num in (self.boundry - np.asarray(position)) if num <= 0])
         return out > 0
 
     def check_walls(self, position):
-        # Проверяем, является ли позиция стеной
+        """ Проверяет, является ли position стеной.
+
+        :param position: координаты, которые необходимо проверить
+        :type position: numpy 1D array
+        :return: True, если position - стена, False - иначе
+        :rtype: bool
+        """
         return self.maze[tuple(position)] == 1
 
     @property
     def valid(self):
+        """
+        Проверяет, является ли состояние валидным (не является стеной или
+        не выходит за пределы лабиринта).
+
+        :return: True, если состояние валидно, False - иначе
+        :rtype: bool
+        """
         if self.check_boundaries(self.position):
             return False
         elif self.check_walls(self.position):
@@ -39,10 +68,23 @@ class State:
 
     @property
     def finished(self):
+        """
+        Проверяет, является ли состояние целевым (текущая позиция совпадает с
+        целевой позицией).
+
+        :return: True, если состояние целевое, False - иначе
+        :rtype: bool
+        """
         return (self.position == self.goal).all()
 
     @plotlive
     def draw(self):
+        """
+        Рисует состояние лабиринта.
+
+        :return: None
+        :rtype: None
+        """
         plt.imshow(self.maze, interpolation="none", aspect="equal", cmap="Greys")
 
         plt.xticks([], [])
@@ -69,6 +111,16 @@ action_map = {0: [0, 1], 1: [0, -1], 2: [1, 0], 3: [-1, 0]}
 
 
 def make_move(state: State, action: int) -> State:
+    """
+    Создаёт новое состояние, соответствующее действию action, примененному к состоянию state.
+
+    :param state: текущее состояние
+    :type state: State
+    :param action: действие, которое необходимо выполнить
+    :type action: int
+    :return: новое состояние, получившееся в результате действия
+    :rtype: State
+    """
     current_position = state.position
 
     move = action_map[action]
