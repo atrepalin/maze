@@ -9,7 +9,7 @@ class State:
     def __init__(self, maze, position, goal):
         """
         Создаёт экземпляр класса State, хранящий информацию о состоянии лабиринта.
-        
+
         :param maze: матрица, представляющая лабиринт
         :type maze: numpy 2D array
         :param position: координаты стартовой позиции
@@ -29,20 +29,20 @@ class State:
         self.maze = maze
 
     def check_boundaries(self, position):
-        """ Проверяет, находится ли position за пределами лабиринта.
+        """Проверяет, находится ли position за пределами лабиринта.
 
         :param position: координаты, которые необходимо проверить
         :type position: numpy 1D array
         :return: True, если position за пределами, False - иначе
         :rtype: bool
         """
-        
+
         out = len([num for num in position if num < 0])
         out += len([num for num in (self.boundry - np.asarray(position)) if num <= 0])
         return out > 0
 
     def check_walls(self, position):
-        """ Проверяет, является ли position стеной.
+        """Проверяет, является ли position стеной.
 
         :param position: координаты, которые необходимо проверить
         :type position: numpy 1D array

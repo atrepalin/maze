@@ -11,15 +11,21 @@ import numpy as np
 
 from solvers import bfs, dfs, dfs_with_cmp, ucs, bnb
 
+
 def print_header():
     print("##############################################")
     print("# Author: Trepalin A. A.")
     print("# Program: Robot in a Maze")
-    print("# Description: This program implements various search algorithms to navigate a robot through a maze. ")
-    print("# The robot can use algorithms such as Branch and Bound, Depth-First Search (with and without heuristic), ")
+    print(
+        "# Description: This program implements various search algorithms to navigate a robot through a maze. "
+    )
+    print(
+        "# The robot can use algorithms such as Branch and Bound, Depth-First Search (with and without heuristic), "
+    )
     print("# Breadth-first search, and Uniform Cost Search to find the optimal path.")
     print("# Version: 04.10.2024")
     print("##############################################")
+
 
 print_header()
 
@@ -29,13 +35,7 @@ maze = load(file)
 
 state = State(maze, np.array([0, 0]), np.array([len(maze) - 1, len(maze[0]) - 1]))
 
-solvers = {
-    "bfs": bfs,
-    "dfs": dfs,
-    "dfs_with_cmp": dfs_with_cmp,
-    "ucs": ucs,
-    "bnb": bnb
-}
+solvers = {"bfs": bfs, "dfs": dfs, "dfs_with_cmp": dfs_with_cmp, "ucs": ucs, "bnb": bnb}
 
 solver = input("Enter solver (bfs, dfs, dfs_with_cmp, ucs, bnb): ")
 
