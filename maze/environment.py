@@ -17,11 +17,9 @@ class State:
         :param goal: координаты целевой позиции
         :type goal: numpy 1D array
         """
-        y = len(maze)
-        x = len(maze[0])
 
         # Устанавливаем границы лабиринта
-        self.boundry = np.array([x, y])
+        self.boundry = maze.shape
 
         # Устанавливаем начальную и конечную точки
         self.position = position

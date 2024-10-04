@@ -33,7 +33,7 @@ file = input("Enter maze file name: ")
 
 maze = load(file)
 
-state = State(maze, np.array([0, 0]), np.array([len(maze) - 1, len(maze[0]) - 1]))
+state = State(maze, np.array([0, 0]), maze.shape - np.asarray([1, 1]))
 
 solvers = {"bfs": bfs, "dfs": dfs, "dfs_with_cmp": dfs_with_cmp, "ucs": ucs, "bnb": bnb}
 

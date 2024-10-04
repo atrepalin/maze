@@ -9,7 +9,9 @@ def generate(w=10, h=10):
     """
     Генерирует случайный лабиринт с помощью алгоритма поиска в глубину.
 
+    :type w: int
     :param w: ширина лабиринта
+    :type h: int
     :param h: высота лабиринта
     :return: сгенерированный лабиринт в виде матрицы NumPy,
              где 0 - путь, 1 - стена
@@ -99,7 +101,9 @@ def save(maze, filename):
     """
     Сохраняет лабиринт в файл filename.
 
+    :type maze: numpy 2D array
     :param maze: лабиринт в виде матрицы NumPy
+    :type filename: string
     :param filename: имя файла, в который будет сохранён лабиринт
     """
     np.save(filename, maze)
@@ -109,8 +113,10 @@ def load(filename):
     """
     Загружает лабиринт из файла filename.
 
+    :type filename: string
     :param filename: имя файла, из которого будет загружен лабиринт
     :return: лабиринт в виде матрицы NumPy
+    :rtype: numpy 2D array
     """
     return np.load(filename)
 
