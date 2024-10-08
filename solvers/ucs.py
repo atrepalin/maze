@@ -1,6 +1,6 @@
 from heapq import heappop, heappush
 from typing import List, Optional
-from maze.environment import State, make_move
+from maze.environment import State
 
 
 # Функция поиска с использованием стратегии равных цен
@@ -40,9 +40,9 @@ def ucs(initial_state: State) -> Optional[List[int]]:
         # Добавляем текущее состояние в посещённые
         visited.add(current_state)
 
-        # Генерируем все возможные действия (0-3)
-        for action in range(4):
-            next_state = make_move(current_state, action)
+        # Генерируем все возможные действия
+        for action in range(current_state.actions):
+            next_state = current_state.make_move(action)
 
             # Если следующее состояние валидно и не посещено ранее
             if next_state and next_state.valid and next_state not in visited:

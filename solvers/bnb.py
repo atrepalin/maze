@@ -1,5 +1,5 @@
 from typing import List, Optional
-from maze.environment import State, make_move
+from maze.environment import State
 
 
 # Функция поиска с использованием метода ветвей и границ
@@ -52,9 +52,9 @@ def bnb(initial_state: State) -> Optional[List[int]]:
         # Добавляем текущее состояние в посещённые
         visited.add(state)
 
-        # Генерируем все возможные действия (0-3)
-        for action in range(4):
-            next_state = make_move(state, action)
+        # Генерируем все возможные действия
+        for action in range(state.actions):
+            next_state = state.make_move(action)
 
             # Если следующее состояние валидно, продолжаем его исследовать
             if next_state and next_state.valid:

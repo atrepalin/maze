@@ -6,7 +6,7 @@
 # Версия: 04.10.2024
 
 from time import sleep
-from maze import load, State, make_move
+from maze import load, State
 import numpy as np
 
 from solvers import bfs, dfs, dfs_with_cmp, ucs, bnb
@@ -50,7 +50,7 @@ if actions is None:
     exit()
 
 for action in actions:
-    state = make_move(state, action)
+    state = state.make_move(action)
     state.draw()
     sleep(0.1)
 

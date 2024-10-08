@@ -1,11 +1,11 @@
 from collections import deque
 from typing import List, Optional
 
-from maze.environment import State, make_move
+from abstracts import AbstractState
 
 
 # Функция поиска в ширину
-def bfs(initial_state: State) -> Optional[List[int]]:
+def bfs(initial_state: AbstractState) -> Optional[List[int]]:
     """
     Функция поиска в ширину (Breadth-First Search, BFS).
 
@@ -46,9 +46,9 @@ def bfs(initial_state: State) -> Optional[List[int]]:
         # Добавляем текущее состояние в посещённые
         visited.add(current_state)
 
-        # Генерируем все возможные действия (0-3)
-        for action in range(4):
-            next_state = make_move(current_state, action)
+        # Генерируем все возможные действия
+        for action in range(current_state.actions):
+            next_state = current_state.make_move(action)
 
             # Если новое состояние валидно и не посещено ранее
             if next_state and next_state.valid and next_state not in visited:

@@ -1,11 +1,15 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from abstracts import AbstractState
 from utils import plotlive
 
 fig, ax = plt.subplots()
 
 
-class State:
+action_map = {0: [0, 1], 1: [0, -1], 2: [1, 0], 3: [-1, 0]}
+
+
+class State(AbstractState):
     def __init__(self, maze, position, goal):
         """
         Создаёт экземпляр класса State, хранящий информацию о состоянии лабиринта.
@@ -104,25 +108,25 @@ class State:
             value.position - value.goal
         )
 
+    @property
+    def actions(self) -> int:
+        return 4
 
-action_map = {0: [0, 1], 1: [0, -1], 2: [1, 0], 3: [-1, 0]}
+    def make_move(self, action: int) -> "State":
+        """
+        Создаёт новое состояние, соответствующее действию action, примененному к состоянию state.
 
+        :param state: текущее состояние
+        :type state: State
+        :param action: действие, которое необходимо выполнить
+        :type action: int
+        :return: новое состояние, получившееся в результате действия
+        :rtype: State
+        """
+        current_position = self.position
 
-def make_move(state: State, action: int) -> State:
-    """
-    Создаёт новое состояние, соответствующее действию action, примененному к состоянию state.
+        move = action_map[action]
 
-    :param state: текущее состояние
-    :type state: State
-    :param action: действие, которое необходимо выполнить
-    :type action: int
-    :return: новое состояние, получившееся в результате действия
-    :rtype: State
-    """
-    current_position = state.position
+        next_position = current_position + np.asarray(move)
 
-    move = action_map[action]
-
-    next_position = current_position + np.asarray(move)
-
-    return State(state.maze, next_position, state.goal)
+        return State(self.maze, next_position, self.goal)

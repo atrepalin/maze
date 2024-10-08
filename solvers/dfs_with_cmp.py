@@ -1,5 +1,6 @@
+from functools import cmp_to_key
 from typing import List, Optional
-from maze.environment import State, make_move
+from maze.environment import State
 
 
 # Функция поиска в глубину
@@ -35,14 +36,27 @@ def dfs_with_cmp(initial_state: State) -> Optional[List[int]]:
         # Добавляем текущее состояние в посещённые
         visited.add(current_state)
 
-        # Генерируем все возможные действия (0-3)
-        next_actions = list(range(4))
+        # Генерируем все возможные действия
+        next_actions = list(range(current_state.actions))
+
+        def cmp(a, b):
+            a_state = current_state.make_move(a)
+            b_state = current_state.make_move(b)
+
+            if a_state is None:
+                return 1
+            elif b_state is None:
+                return -1
+            elif a_state == b_state:
+                return 0
+            else:
+                return -1 if a_state < b_state else 1
 
         # Сортируем возможные действия так, чтобы робот был ближе к цели
-        next_actions.sort(key=lambda action: make_move(current_state, action))
+        next_actions.sort(key=cmp_to_key(cmp))
 
         for action in next_actions:
-            next_state = make_move(current_state, action)
+            next_state = current_state.make_move(action)
 
             # Если новое состояние валидно и не посещено ранее
             if next_state and next_state.valid and next_state not in visited:

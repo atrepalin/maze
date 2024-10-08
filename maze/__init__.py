@@ -1,2 +1,2 @@
-from .environment import make_move, State
+from .environment import State
 from .generator import generate, load, save
