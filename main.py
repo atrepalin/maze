@@ -13,6 +13,7 @@ from maze import load, State, make_move
 import numpy as np
 
 from solvers import bfs, dfs, dfs_with_cmp, ucs, bnb, bidirectional_search
+from utils import select_option
 
 
 def print_header():
@@ -35,7 +36,11 @@ def print_header():
 def main(argv):
     print_header()
 
-    opts = dict(getopt.getopt(argv, "f:s:")[0])
+    try:
+        opts = dict(getopt.getopt(argv, "f:s:")[0])
+    except getopt.GetoptError:
+        print("Invalid arguments. Exiting...")
+        exit()
 
     if "-f" in opts:
         file = opts["-f"]
@@ -64,12 +69,21 @@ def main(argv):
         "bidirectional_search": partial(bidirectional_search, goal_state),
     }
 
+    solver_options = list(solvers.keys())
+    solver_names = [
+        "Breadth-first search",
+        "Depth-first search",
+        "DFS with comparison",
+        "Uniform Cost Search",
+        "Branch and Bound",
+        "Bidirectional search",
+    ]
+
     if "-s" in opts:
         solver = opts["-s"]
     else:
-        solver = input(
-            "Enter solver (bfs, dfs, dfs_with_cmp, ucs, bnb, bidirectional_search): "
-        )
+        option = select_option(solver_names)
+        solver = solver_options[option]
 
     if solver not in solvers:
         print("Invalid solver. Exiting...")
