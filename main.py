@@ -25,7 +25,9 @@ def print_header():
     print(
         "# The robot can use algorithms such as Branch and Bound, Depth-First Search (with and without heuristic), "
     )
-    print("# Breadth-first search, Bidirectional search and Uniform Cost Search to find the optimal path.")
+    print(
+        "# Breadth-first search, Bidirectional search and Uniform Cost Search to find the optimal path."
+    )
     print("# Version: 08.10.2024")
     print("##############################################")
 
@@ -59,7 +61,7 @@ def main(argv):
         "dfs_with_cmp": dfs_with_cmp,
         "ucs": ucs,
         "bnb": bnb,
-        "bidirectional_search": partial(bidirectional_search, goal_state=goal_state),
+        "bidirectional_search": partial(bidirectional_search, goal_state),
     }
 
     if "-s" in opts:

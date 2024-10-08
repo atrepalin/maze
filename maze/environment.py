@@ -105,7 +105,7 @@ class State:
         )
 
 
-action_map = {0: [0, 1], 1: [0, -1], 2: [1, 0], 3: [-1, 0]}
+action_map = {0: [0, 1], 1: [1, 0], 2: [-1, 0], 3: [0, -1]}
 
 
 def make_move(state: State, action: int) -> State:
