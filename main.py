@@ -9,7 +9,8 @@ from functools import partial
 import getopt
 import sys
 from time import sleep
-from maze import load, State, make_move
+import keyboard
+from maze import load, Situation, make_move
 import numpy as np
 
 from solvers import bfs, dfs, dfs_with_cmp, ucs, bnb, bidirectional_search
@@ -54,9 +55,9 @@ def main(argv):
     print("Loading maze from " + file)
     maze = load(file)
 
-    state = State(maze, np.array([0, 0]), maze.shape - np.asarray([1, 1]))
+    situation = Situation(maze, np.array([0, 0]), maze.shape - np.asarray([1, 1]))
 
-    goal_state = State(
+    goal_situation = Situation(
         maze, maze.shape - np.asarray([1, 1]), maze.shape - np.asarray([1, 1])
     )
 
@@ -66,7 +67,7 @@ def main(argv):
         "dfs_with_cmp": dfs_with_cmp,
         "ucs": ucs,
         "bnb": bnb,
-        "bidirectional_search": partial(bidirectional_search, goal_state),
+        "bidirectional_search": partial(bidirectional_search, goal_situation),
     }
 
     solver_options = list(solvers.keys())
@@ -91,18 +92,18 @@ def main(argv):
 
     print("Solver: " + solver)
 
-    actions = solvers[solver](state)
+    actions = solvers[solver](situation)
 
     if actions is None:
         print("No solution found. Exiting...")
         exit()
 
     for action in actions:
-        state = make_move(state, action)
-        state.draw()
+        situation = make_move(situation, action)
+        situation.draw()
         sleep(0.1)
 
-    input()
+    keyboard.read_event()
 
 
 if __name__ == "__main__":
