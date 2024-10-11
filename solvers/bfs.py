@@ -1,58 +1,58 @@
 from collections import deque
 from typing import List, Optional
 
-from maze.environment import State, make_move
+from maze.environment import Situation, make_move
 
 
 # Функция поиска в ширину
-def bfs(initial_state: State) -> Optional[List[int]]:
+def bfs(initial_situation: Situation) -> Optional[List[int]]:
     """
     Функция поиска в ширину (Breadth-First Search, BFS).
 
-    Берётся начальное состояние и строится дерево с помощью очереди,
-    где каждый узел - это состояние, а каждый ребро - это действие,
+    Берётся начальное ситуация и строится дерево с помощью очереди,
+    где каждый узел - это ситуация, а каждый ребро - это действие,
     которое привело к этому состоянию.
 
     Алгоритм работает следующим образом:
-    1. Инициализируем очередь, содержащую начальное состояние.
-    2. Берём верхний элемент очереди, это текущее состояние.
-    3. Если текущее состояние - это целевое, то возвращаем путь,
+    1. Инициализируем очередь, содержащую начальное ситуация.
+    2. Берём верхний элемент очереди, это текущее ситуация.
+    3. Если текущее ситуация - это целевое, то возвращаем путь,
        который привёл к этому состоянию.
     4. Иначе, генерируем все возможные действия (0-3) и
-       добавляем в очередь новые состояния, полученные из текущего,
+       добавляем в очередь новые ситуации, полученные из текущего,
        с обновлённым путём.
     5. Если очередь пуста, то решение не найдено.
 
-    :param initial_state: начальное состояние
+    :param initial_situation: начальное ситуация
     :return: путь, который привёл к целевому состоянию, или None,
              если решение не найдено
     """
-    visited = set()  # Храним все посещённые состояния
+    visited = set()  # Храним все посещённые ситуации
     queue = deque(
-        [(initial_state, [])]
-    )  # Каждый элемент: (текущее состояние, путь действий)
+        [(initial_situation, [])]
+    )  # Каждый элемент: (текущее ситуация, путь действий)
 
     while queue:
-        current_state, path = queue.popleft()
+        current_situation, path = queue.popleft()
 
-        # Проверяем, достигнуто ли целевое состояние
-        if current_state.finished:
+        # Проверяем, достигнуто ли целевое ситуация
+        if current_situation.finished:
             return path
 
-        # Пропускаем, если это состояние уже было посещено
-        if current_state in visited:
+        # Пропускаем, если это ситуация уже было посещено
+        if current_situation in visited:
             continue
 
-        # Добавляем текущее состояние в посещённые
-        visited.add(current_state)
+        # Добавляем текущее ситуация в посещённые
+        visited.add(current_situation)
 
         # Генерируем все возможные действия (0-3)
         for action in range(4):
-            next_state = make_move(current_state, action)
+            next_situation = make_move(current_situation, action)
 
-            # Если новое состояние валидно и не посещено ранее
-            if next_state and next_state.valid and next_state not in visited:
-                # Добавляем новое состояние в очередь с обновлённым путём
-                queue.append((next_state, path + [action]))
+            # Если новое ситуация валидно и не посещено ранее
+            if next_situation and next_situation.valid and next_situation not in visited:
+                # Добавляем новое ситуация в очередь с обновлённым путём
+                queue.append((next_situation, path + [action]))
 
     return None  # Решение не найдено

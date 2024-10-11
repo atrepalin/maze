@@ -1,50 +1,50 @@
 from typing import List, Optional
-from maze.environment import State, make_move
+from maze.environment import Situation, make_move
 
 
 # Функция поиска в глубину
-def dfs(initial_state: State) -> Optional[List[int]]:
+def dfs(initial_situation: Situation) -> Optional[List[int]]:
     """
     Функция поиска в глубину (Depth-First Search, DFS).
 
-    Берётся начальное состояние и строится дерево с помощью стека,
-    где каждый узел - это состояние, а каждый ребро - это действие,
+    Берётся начальное ситуация и строится дерево с помощью стека,
+    где каждый узел - это ситуация, а каждый ребро - это действие,
     которое привело к этому состоянию.
 
     Алгоритм работает следующим образом:
-    1. Инициализируем стек, содержащий начальное состояние.
-    2. Берём верхний элемент стека, это текущее состояние.
-    3. Если текущее состояние - это целевое, то возвращаем путь,
+    1. Инициализируем стек, содержащий начальное ситуация.
+    2. Берём верхний элемент стека, это текущее ситуация.
+    3. Если текущее ситуация - это целевое, то возвращаем путь,
        который привёл к этому состоянию.
     4. Иначе, генерируем все возможные действия (0-3) и
-       добавляем в стек новые состояния, полученные из текущего,
+       добавляем в стек новые ситуации, полученные из текущего,
        с обновлённым путём.
     5. Если стек пуст, то решение не найдено.
 
-    :param initial_state: начальное состояние
+    :param initial_situation: начальное ситуация
     :return: путь, который привёл к целевому состоянию, или None,
              если решение не найдено
     """
-    visited = set()  # Храним все посещённые состояния
-    stack = [(initial_state, [])]  # Каждый элемент: (текущее состояние, путь действий)
+    visited = set()  # Храним все посещённые ситуации
+    stack = [(initial_situation, [])]  # Каждый элемент: (текущее ситуация, путь действий)
 
     while stack:
-        current_state, path = stack.pop()
+        current_situation, path = stack.pop()
 
-        # Проверяем, достигнуто ли целевое состояние
-        if current_state.finished:
+        # Проверяем, достигнуто ли целевое ситуация
+        if current_situation.finished:
             return path
 
-        # Добавляем текущее состояние в посещённые
-        visited.add(current_state)
+        # Добавляем текущее ситуация в посещённые
+        visited.add(current_situation)
 
         # Генерируем все возможные действия (0-3)
         for action in range(4):
-            next_state = make_move(current_state, action)
+            next_situation = make_move(current_situation, action)
 
-            # Если новое состояние валидно и не посещено ранее
-            if next_state and next_state.valid and next_state not in visited:
-                # Добавляем новое состояние в стек с обновлённым путём
-                stack.append((next_state, path + [action]))
+            # Если новое ситуация валидно и не посещено ранее
+            if next_situation and next_situation.valid and next_situation not in visited:
+                # Добавляем новое ситуация в стек с обновлённым путём
+                stack.append((next_situation, path + [action]))
 
     return None  # Решение не найдено

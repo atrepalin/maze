@@ -1,10 +1,10 @@
 from heapq import heappop, heappush
 from typing import List, Optional
-from maze.environment import State, make_move
+from maze.environment import Situation, make_move
 
 
 # Функция поиска с использованием стратегии равных цен
-def ucs(initial_state: State) -> Optional[List[int]]:
+def ucs(initial_situation: Situation) -> Optional[List[int]]:
     """
     Функция поиска решения в лабиринте с использованием алгоритма поиска по стратегии равных цен (Uniform Cost Search, UCS).
 
@@ -12,41 +12,41 @@ def ucs(initial_state: State) -> Optional[List[int]]:
     В данном случае все переходы имеют одинаковую стоимость.
 
     Алгоритм работает следующим образом:
-    1. Инициализируем приоритетную очередь, в которой каждый элемент представляет текущую стоимость, состояние и путь.
-    2. Извлекаем состояние с наименьшей стоимостью из очереди.
-    3. Проверяем, достигнуто ли целевое состояние — если да, возвращаем путь.
-    4. Добавляем текущее состояние в множество посещённых.
+    1. Инициализируем приоритетную очередь, в которой каждый элемент представляет текущую стоимость, ситуация и путь.
+    2. Извлекаем ситуация с наименьшей стоимостью из очереди.
+    3. Проверяем, достигнуто ли целевое ситуация — если да, возвращаем путь.
+    4. Добавляем текущее ситуация в множество посещённых.
     5. Генерируем возможные действия (0-3) и для каждого действия:
-       - Если следующее состояние валидно и не посещено ранее, добавляем его в очередь с обновлённой стоимостью и путём.
+       - Если следующее ситуация валидно и не посещено ранее, добавляем его в очередь с обновлённой стоимостью и путём.
     6. Если решение не найдено, возвращаем None.
 
-    :param initial_state: начальное состояние лабиринта
+    :param initial_situation: начальное ситуация лабиринта
     :return: список действий, ведущих к цели, или None, если решение не найдено
     """
     queue = [
-        (0, initial_state, [])
-    ]  # Очередь с приоритетом (стоимость, состояние, путь)
+        (0, initial_situation, [])
+    ]  # Очередь с приоритетом (стоимость, ситуация, путь)
     visited = set()  # Множество для хранения посещённых состояний
 
     while queue:
-        cost, current_state, path = heappop(
+        cost, current_situation, path = heappop(
             queue
-        )  # Извлекаем состояние с наименьшей стоимостью
+        )  # Извлекаем ситуация с наименьшей стоимостью
 
-        # Проверяем, достигнуто ли целевое состояние
-        if current_state.finished:
+        # Проверяем, достигнуто ли целевое ситуация
+        if current_situation.finished:
             return path
 
-        # Добавляем текущее состояние в посещённые
-        visited.add(current_state)
+        # Добавляем текущее ситуация в посещённые
+        visited.add(current_situation)
 
         # Генерируем все возможные действия (0-3)
         for action in range(4):
-            next_state = make_move(current_state, action)
+            next_situation = make_move(current_situation, action)
 
-            # Если следующее состояние валидно и не посещено ранее
-            if next_state and next_state.valid and next_state not in visited:
-                # Добавляем новое состояние в очередь с обновлённым путём
-                heappush(queue, (cost + 1, next_state, path + [action]))
+            # Если следующее ситуация валидно и не посещено ранее
+            if next_situation and next_situation.valid and next_situation not in visited:
+                # Добавляем новое ситуация в очередь с обновлённым путём
+                heappush(queue, (cost + 1, next_situation, path + [action]))
 
     return None  # Решение не найдено

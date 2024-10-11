@@ -5,10 +5,10 @@ from utils import plotlive
 fig, ax = plt.subplots()
 
 
-class State:
+class Situation:
     def __init__(self, maze, position, goal):
         """
-        Создаёт экземпляр класса State, хранящий информацию о состоянии лабиринта.
+        Создаёт экземпляр класса Situation, хранящий информацию о состоянии лабиринта.
 
         :param maze: матрица, представляющая лабиринт
         :type maze: numpy 2D array
@@ -52,10 +52,10 @@ class State:
     @property
     def valid(self):
         """
-        Проверяет, является ли состояние валидным (не является стеной или
+        Проверяет, является ли ситуация валидным (не является стеной или
         не выходит за пределы лабиринта).
 
-        :return: True, если состояние валидно, False - иначе
+        :return: True, если ситуация валидно, False - иначе
         :rtype: bool
         """
         if self.check_boundaries(self.position):
@@ -67,10 +67,10 @@ class State:
     @property
     def finished(self):
         """
-        Проверяет, является ли состояние целевым (текущая позиция совпадает с
+        Проверяет, является ли ситуация целевым (текущая позиция совпадает с
         целевой позицией).
 
-        :return: True, если состояние целевое, False - иначе
+        :return: True, если ситуация целевое, False - иначе
         :rtype: bool
         """
         return (self.position == self.goal).all()
@@ -78,7 +78,7 @@ class State:
     @plotlive
     def draw(self):
         """
-        Рисует состояние лабиринта.
+        Рисует ситуация лабиринта.
 
         :return: None
         :rtype: None
@@ -93,13 +93,13 @@ class State:
             self.position[1], self.position[0], "rs", markersize=4
         )  # Отметка стартовой позиции
 
-    def __eq__(self, value: "State") -> bool:
+    def __eq__(self, value: "Situation") -> bool:
         return (self.position == value.position).all()
 
     def __hash__(self) -> int:
         return hash(tuple(self.position))
 
-    def __lt__(self, value: "State") -> int:
+    def __lt__(self, value: "Situation") -> int:
         return np.linalg.norm(self.position - self.goal) < np.linalg.norm(
             value.position - value.goal
         )
@@ -108,21 +108,21 @@ class State:
 action_map = {0: [0, 1], 1: [1, 0], 2: [-1, 0], 3: [0, -1]}
 
 
-def make_move(state: State, action: int) -> State:
+def make_move(situation: Situation, action: int) -> Situation:
     """
-    Создаёт новое состояние, соответствующее действию action, примененному к состоянию state.
+    Создаёт новую ситуацию, соответствующее действию action, примененному к состоянию situation.
 
-    :param state: текущее состояние
-    :type state: State
+    :param situation: текущяя ситуация
+    :type situation: Situation
     :param action: действие, которое необходимо выполнить
     :type action: int
-    :return: новое состояние, получившееся в результате действия
-    :rtype: State
+    :return: новая ситуация, получившееся в результате действия
+    :rtype: Situation
     """
-    current_position = state.position
+    current_position = situation.position
 
     move = action_map[action]
 
     next_position = current_position + np.asarray(move)
 
-    return State(state.maze, next_position, state.goal)
+    return Situation(situation.maze, next_position, situation.goal)
