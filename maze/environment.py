@@ -110,7 +110,7 @@ action_map = {0: [0, 1], 1: [1, 0], 2: [-1, 0], 3: [0, -1]}
 
 def make_move(situation: Situation, action: int) -> Situation:
     """
-    Создаёт новую ситуацию, соответствующее действию action, примененному к состоянию situation.
+    Создаёт новую ситуацию, соответствующее действию action, примененному к ситуации situation.
 
     :param situation: текущяя ситуация
     :type situation: Situation

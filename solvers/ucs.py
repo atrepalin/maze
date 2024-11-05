@@ -28,7 +28,7 @@ def ucs(initial_situation: Situation) -> Optional[tuple[List[int], Statistic]]:
     queue = [
         (0, initial_situation, [], 0)
     ]  # Очередь с приоритетом (стоимость, ситуация, путь, глубина)
-    visited = set()  # Множество для хранения посещённых состояний
+    visited = set()  # Множество для хранения посещённых ситуаций
 
     max_depth = 0  # Максимальная глубина поиска
     all_generated = 0  # Общее число порождённых вершин
