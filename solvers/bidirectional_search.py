@@ -1,42 +1,67 @@
 from collections import deque
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
+
+from analyzer.statistic import Statistic
 from maze.environment import Situation, make_move
 
 
-def bidirectional_search(initial_situation: Situation, goal_situation: Situation):
+def bidirectional_search(
+    initial_state: Situation, goal_state: Situation
+) -> Optional[tuple[List[int], Statistic]]:
     """
-    Алгоритм двунаправленного поиска для нахождения пути от начального ситуации к целевому.
+    Алгоритм двунаправленного поиска.
 
-    :param initial_situation: начальное ситуация робота в лабиринте
-    :param goal_situation: целевое ситуация (финиш)
-    :return: список действий, ведущих к цели, или None, если решение не найдено
+    :param initial_state: начальное состояние робота в лабиринте
+    :param goal_state: целевое состояние (финиш)
+    :return: список действий, ведущих к цели, или None, если решение не найдено, и статистика поиска
     """
     # Очереди для двух направлений поиска
-    front_queue = deque([(initial_situation, [])])  # Поиск от начального ситуации
-    back_queue = deque([(goal_situation, [])])  # Поиск от целевого ситуации
+    front_queue = deque([(initial_state, [], 0)])  # Поиск от начального состояния
+    back_queue = deque([(goal_state, [], 0)])  # Поиск от целевого состояния
 
     # Множества для посещённых состояний с каждой стороны
     front_visited = {
-        initial_situation: []
-    }  # Карта: ситуация -> путь от начального ситуации
-    back_visited = {goal_situation: []}  # Карта: ситуация -> путь от целевого ситуации
+        initial_state: []
+    }  # Карта: состояние -> путь от начального состояния
+    back_visited = {goal_state: []}  # Карта: состояние -> путь от целевого состояния
+
+    max_depth = [0, 0]  # Максимальная глубина поиска
+    all_generated = 0  # Общее число порождённых вершин
 
     while front_queue and back_queue:
-        # Расширяем фронт от начального ситуации
-        result = expand_front(front_queue, front_visited, back_visited, False)
-        if result:
-            return result  # Путь найден
+        # Расширяем фронт от начального состояния
+        result, depth_increase, max_depth_in_front = expand_front(
+            front_queue, front_visited, back_visited, False
+        )
 
-        # Расширяем фронт от целевого ситуации
-        result = expand_front(back_queue, back_visited, front_visited, True)
+        max_depth[0] = max(max_depth[0], max_depth_in_front)
+
+        all_generated += depth_increase
+
         if result:
-            return result  # Путь найден
+            return result, Statistic(
+                len(result), max_depth_in_front + max_depth[1], all_generated
+            )  # Путь найден
+
+        # Расширяем фронт от целевого состояния
+        result, depth_increase, max_depth_in_front = expand_front(
+            back_queue, back_visited, front_visited, True
+        )
+
+        max_depth[1] = max(max_depth[1], max_depth_in_front)
+
+        all_generated += depth_increase
+
+        if result:
+            return result, Statistic(
+                len(result), max_depth_in_front + max_depth[0], all_generated
+            )
 
     return None  # Решение не найдено
 
 
 def expand_front(
-    queue: deque[Tuple[Situation, List]],
+    queue: deque[Tuple[Situation, List, int]],
     visited_from_this_side: Dict[Situation, List],
     visited_from_other_side: Dict[Situation, List],
     reverse_path: bool,
@@ -45,35 +70,39 @@ def expand_front(
     Расширяет один фронт поиска и проверяет пересечение с другим фронтом.
 
     :param queue: очередь для текущего фронта поиска
-    :param visited_from_this_side: ситуации, посещённые с этой стороны
-    :param visited_from_other_side: ситуации, посещённые с противоположной стороны
-    :param reverse_path: если True, разворачиваем путь от целевого ситуации
+    :param visited_from_this_side: состояния, посещённые с этой стороны
+    :param visited_from_other_side: состояния, посещённые с противоположной стороны
+    :param reverse_path: если True, разворачиваем путь от целевого состояния
     :return: список действий, если путь найден, или None
     """
-    current_situation, path = queue.popleft()
+    current_state, path, current_depth = queue.popleft()
+    nodes_generated = 0  # Счётчик для порождённых вершин
+    max_depth_in_front = current_depth  # Максимальная глубина в текущем фронте
 
-    # Проверяем, пересекается ли текущее ситуация с другим фронтом
-    if current_situation in visited_from_other_side:
+    # Проверяем, пересекается ли текущее состояние с другим фронтом
+    if current_state in visited_from_other_side:
         # Получаем путь от другого фронта
-        other_path = visited_from_other_side[current_situation]
+        other_path = visited_from_other_side[current_state]
 
-        # Если мы расширяем путь от целевого ситуации, разворачиваем его
+        # Если мы расширяем путь от целевого состояния, разворачиваем его
         if reverse_path:
-            return path + [
-                (3 - x) for x in other_path[::-1]
-            ]  # Объединяем путь от начального и целевого ситуации
-        else:
             return (
-                other_path[::-1] + path
-            )  # Объединяем путь от начального и целевого ситуации
+                path + [(3 - x) for x in other_path[::-1]],
+                nodes_generated,
+                max_depth_in_front,
+            )
+        else:
+            return other_path[::-1] + path, nodes_generated, max_depth_in_front
 
     # Генерируем возможные действия (0-3) и продолжаем исследование
     for action in range(4):
-        next_situation = make_move(current_situation, action)
+        next_state = make_move(current_state, action)
 
-        # Если следующее ситуация валидно и не посещено с этой стороны
-        if next_situation and next_situation.valid and next_situation not in visited_from_this_side:
-            visited_from_this_side[next_situation] = path + [action]  # Обновляем путь
-            queue.append((next_situation, path + [action]))
+        # Если следующее состояние валидно и не посещено с этой стороны
+        if next_state and next_state.valid and next_state not in visited_from_this_side:
+            visited_from_this_side[next_state] = path + [action]  # Обновляем путь
+            queue.append((next_state, path + [action], current_depth + 1))
+            nodes_generated += 1  # Увеличиваем число порождённых вершин
+            max_depth_in_front = max(max_depth_in_front, current_depth + 1)
 
-    return None
+    return None, nodes_generated, max_depth_in_front

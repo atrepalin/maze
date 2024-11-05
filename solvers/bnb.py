@@ -1,10 +1,16 @@
 from typing import List, Optional
+
+from analyzer.statistic import Statistic
 from maze.environment import Situation, make_move
 
 
 # Функция поиска с использованием метода ветвей и границ
-def bnb(initial_situation: Situation) -> Optional[List[int]]:
+def bnb(initial_situation: Situation) -> Optional[tuple[List[int], Statistic]]:
     """
+    :param initial_situation: начальное ситуация
+    :return: путь, который привёл к целевому состоянию, или None,
+             если решение не найдено
+
     Функция поиска с использованием метода ветвей и границ (Branch and Bound, BnB).
 
     Берётся начальное ситуация и строится дерево с помощью рекурсивной функции,
@@ -22,49 +28,45 @@ def bnb(initial_situation: Situation) -> Optional[List[int]]:
        для следующего ситуации.
     7. Удаляем текущее ситуация из посещённых после его исследования.
     8. Возвращаем лучшее найденное решение.
-
-    :param initial_situation: начальное ситуация
-    :return: путь, который привёл к целевому состоянию, или None,
-             если решение не найдено
     """
-    best_solution = None  # Инициализация лучшего решения как None
-    best_cost = float("inf")  # Инициализация лучшей стоимости как бесконечность
-    visited = set()  # Множество для хранения посещённых состояний
 
-    # Вспомогательная рекурсивная функция для исследования всех возможных путей
-    def explore(situation: Situation, path, cost):
-        nonlocal best_solution, best_cost
+    best_solution = None
+    best_cost = float("inf")
+    visited = set()
+    max_depth = 0
+    all_generated = 0
 
-        # Если текущая стоимость превышает лучшую найденную, прекращаем исследование
+    def explore(situation: Situation, path, cost, depth):
+        nonlocal best_solution, best_cost, max_depth, all_generated
+
         if cost >= best_cost:
             return
 
-        # Проверяем, достигнуто ли целевое ситуация
         if situation.finished:
-            best_solution = path  # Обновляем лучшее решение
-            best_cost = cost  # Обновляем минимальную стоимость
+            best_solution = path
+            best_cost = cost
             return
 
-        # Если текущее ситуация уже посещено, выходим из функции
         if situation in visited:
             return
 
-        # Добавляем текущее ситуация в посещённые
         visited.add(situation)
+        all_generated += 1
+        max_depth = max(max_depth, depth)
 
-        # Генерируем все возможные действия (0-3)
         for action in range(4):
             next_situation = make_move(situation, action)
 
-            # Если следующее ситуация валидно, продолжаем его исследовать
             if next_situation and next_situation.valid:
-                # Рекурсивно вызываем explore для следующего ситуации
-                explore(next_situation, path + [action], cost + 1)
+                explore(next_situation, path + [action], cost + 1, depth + 1)
 
-        # Удаляем текущее ситуация из посещённых после его исследования
         visited.remove(situation)
 
-    # Запускаем исследование с начального ситуации
-    explore(initial_situation, [], 0)
+    explore(initial_situation, [], 0, 0)
 
-    return best_solution  # Возвращаем лучшее найденное решение
+    if best_solution is not None:
+        return best_solution, Statistic(
+            len(best_solution), max_depth + 1, all_generated
+        )
+    else:
+        return None

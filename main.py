@@ -3,7 +3,7 @@
 # Описание: Данная программа реализует различные алгоритмы поиска пути для навигации робота по лабиринту.
 # Робот может использовать такие алгоритмы, как метод ветвей и границ, поиск в глубину (с и без эвристики),
 # поиск в ширину, двунаправленный поиск и алгоритм равных цен для нахождения оптимального пути.
-# Версия: 08.10.2024
+# Версия: 05.11.2024
 
 from functools import partial
 import getopt
@@ -30,7 +30,7 @@ def print_header():
     print(
         "# Breadth-first search, Bidirectional search and Uniform Cost Search to find the optimal path."
     )
-    print("# Version: 08.10.2024")
+    print("# Version: 05.11.2024")
     print("##############################################")
 
 
@@ -92,7 +92,9 @@ def main(argv):
 
     print("Solver: " + solver)
 
-    actions = solvers[solver](situation)
+    actions, statistic = solvers[solver](situation)
+
+    print(statistic)
 
     if actions is None:
         print("No solution found. Exiting...")
