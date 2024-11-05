@@ -5,7 +5,7 @@ import random
 import numpy as np
 
 
-def generate(w=10, h=10):
+def generate(w: int=10, h: int=10) -> np.ndarray:
     """
     Генерирует случайный лабиринт с помощью алгоритма поиска в глубину.
 
@@ -15,6 +15,7 @@ def generate(w=10, h=10):
     :param h: высота лабиринта
     :return: сгенерированный лабиринт в виде матрицы NumPy,
              где 0 - путь, 1 - стена
+    :rtype: numpy 2D array
     """
     maze = [[0 for _ in range(w)] for _ in range(h)]
 
@@ -97,7 +98,7 @@ def generate(w=10, h=10):
     return maze  # Возвращаем сгенерированный лабиринт
 
 
-def save(maze, filename):
+def save(maze: np.ndarray, filename: str):
     """
     Сохраняет лабиринт в файл filename.
 
@@ -109,7 +110,7 @@ def save(maze, filename):
     np.save(filename, maze)
 
 
-def load(filename):
+def load(filename: str) -> np.ndarray:
     """
     Загружает лабиринт из файла filename.
 

@@ -6,7 +6,7 @@ fig, ax = plt.subplots()
 
 
 class Situation:
-    def __init__(self, maze, position, goal):
+    def __init__(self, maze: np.ndarray, position: np.ndarray, goal: np.ndarray):
         """
         Создаёт экземпляр класса Situation, хранящий информацию о состоянии лабиринта.
 
@@ -26,7 +26,7 @@ class Situation:
         self.goal = goal
         self.maze = maze
 
-    def check_boundaries(self, position):
+    def check_boundaries(self, position: np.ndarray):
         """Проверяет, находится ли position за пределами лабиринта.
 
         :param position: координаты, которые необходимо проверить
@@ -39,7 +39,7 @@ class Situation:
         out += len([num for num in (self.boundry - np.asarray(position)) if num <= 0])
         return out > 0
 
-    def check_walls(self, position):
+    def check_walls(self, position: np.ndarray):
         """Проверяет, является ли position стеной.
 
         :param position: координаты, которые необходимо проверить
