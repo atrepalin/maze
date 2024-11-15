@@ -98,7 +98,7 @@ def expand_front(
     for action in range(4):
         next_state = make_move(current_state, action)
 
-        # Если следующая ситация валидна и не посещено с этой стороны
+        # Если следующая ситация валидна и не посещена с этой стороны
         if next_state and next_state.valid and next_state not in visited_from_this_side:
             visited_from_this_side[next_state] = path + [action]  # Обновляем путь
             queue.append((next_state, path + [action], current_depth + 1))

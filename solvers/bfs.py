@@ -31,7 +31,7 @@ def bfs(initial_situation: Situation) -> Optional[tuple[List[int], Statistic]]:
     visited = set()  # Храним все посещённые ситуации
     queue = deque(
         [(initial_situation, [], 0)]
-    )  # Каждый элемент: (текущее ситуация, путь действий, глубина)
+    )  # Каждый элемент: (текущая ситуация, путь действий, глубина)
 
     max_depth = 0  # Максимальная глубина поиска
     all_generated = 0  # Общее число порождённых вершин
@@ -43,11 +43,11 @@ def bfs(initial_situation: Situation) -> Optional[tuple[List[int], Statistic]]:
         if current_situation.finished:
             return path, Statistic(len(path), max_depth + 1, all_generated)
 
-        # Пропускаем, если это ситуация уже было посещено
+        # Пропускаем, если это ситуация уже была посещена
         if current_situation in visited:
             continue
 
-        # Добавляем текущее ситуация в посещённые
+        # Добавляем текущую ситуация в посещённые
         visited.add(current_situation)
         all_generated += 1
 
@@ -58,13 +58,13 @@ def bfs(initial_situation: Situation) -> Optional[tuple[List[int], Statistic]]:
         for action in range(4):
             next_situation = make_move(current_situation, action)
 
-            # Если новое ситуация валидно и не посещено ранее
+            # Если новая ситуация валидна и не посещена ранее
             if (
                 next_situation
                 and next_situation.valid
                 and next_situation not in visited
             ):
-                # Добавляем новое ситуация в очередь с обновлённым путём
+                # Добавляем новую ситуацию в очередь с обновлённым путём
                 queue.append((next_situation, path + [action], depth + 1))
 
     return None  # Решение не найдено

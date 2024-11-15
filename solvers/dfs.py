@@ -18,9 +18,9 @@ def dfs(initial_situation: Situation) -> Optional[tuple[List[int], Statistic]]:
     которое привело к этой ситуации.
 
     Алгоритм работает следующим образом:
-    1. Инициализируем стек, содержащий начальное ситуация.
-    2. Берём верхний элемент стека, это текущее ситуация.
-    3. Если текущее ситуация - это целевое, то возвращаем путь,
+    1. Инициализируем стек, содержащий начальную ситуация.
+    2. Берём верхний элемент стека, это текущая ситуация.
+    3. Если текущая ситуация - это целевая, то возвращаем путь,
        который привёл к этой ситуации.
     4. Иначе, генерируем все возможные действия (0-3) и
        добавляем в стек новые ситуации, полученные из текущего,
@@ -30,7 +30,7 @@ def dfs(initial_situation: Situation) -> Optional[tuple[List[int], Statistic]]:
     visited = set()  # Храним все посещённые ситуации
     stack = [
         (initial_situation, [], 0)
-    ]  # Каждый элемент: (текущее ситуация, путь действий)
+    ]  # Каждый элемент: (текущая ситуация, путь действий)
 
     max_depth = 0  # Максимальная глубина поиска
     all_generated = 0  # Общее число порождённых вершин
@@ -38,11 +38,11 @@ def dfs(initial_situation: Situation) -> Optional[tuple[List[int], Statistic]]:
     while stack:
         current_situation, path, depth = stack.pop()
 
-        # Проверяем, достигнуто ли целевое ситуация
+        # Проверяем, достигнута ли целевая ситуация
         if current_situation.finished:
             return path, Statistic(len(path), max_depth + 1, all_generated)
 
-        # Добавляем текущее ситуация в посещённые
+        # Добавляем текущую ситуация в посещённые
         visited.add(current_situation)
         all_generated += 1
 
@@ -53,13 +53,13 @@ def dfs(initial_situation: Situation) -> Optional[tuple[List[int], Statistic]]:
         for action in range(4):
             next_situation = make_move(current_situation, action)
 
-            # Если новое ситуация валидно и не посещено ранее
+            # Если новая ситуация валидна и не посещено ранее
             if (
                 next_situation
                 and next_situation.valid
                 and next_situation not in visited
             ):
-                # Добавляем новое ситуация в стек с обновлённым путём
+                # Добавляем новую ситуацию в стек с обновлённым путём
                 stack.append((next_situation, path + [action], depth + 1))
 
     return None  # Решение не найдено
