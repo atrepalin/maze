@@ -5,91 +5,60 @@ import random
 import numpy as np
 
 
-def generate(w: int=10, h: int=10) -> np.ndarray:
+def generate(w: int = 10, h: int = 10, num_paths: int = 3) -> np.ndarray:
     """
-    Генерирует случайный лабиринт с помощью алгоритма поиска в глубину.
+    Генерирует случайный лабиринт с помощью алгоритма поиска в глубину с несколькими путями.
 
     :type w: int
     :param w: ширина лабиринта
     :type h: int
     :param h: высота лабиринта
+    :type num_paths: int
+    :param num_paths: количество путей в лабиринте
     :return: сгенерированный лабиринт в виде матрицы NumPy,
              где 0 - путь, 1 - стена
     :rtype: numpy 2D array
     """
-    maze = [[0 for _ in range(w)] for _ in range(h)]
+    maze = [[1 for _ in range(w)] for _ in range(h)]  # Все ячейки — стены
 
     # Направления движения: вверх, вправо, вниз, влево
     dx = [0, 1, 0, -1]
     dy = [-1, 0, 1, 0]
 
-    # Случайная стартовая позиция для генерации лабиринта
-    cx = random.randint(0, w - 1)
-    cy = random.randint(0, h - 1)
+    def carve_path(cx, cy):
+        """Прокладывает путь из текущей позиции в случайном направлении."""
+        stack = [(cx, cy)]  # Стек для отслеживания пути
+        maze[cy][cx] = 0  # Начальная ячейка — путь
 
-    # Устанавливаем начальную ячейку как проходимую (1)
-    maze[cy][cx] = 1
+        while stack:
+            x, y = stack[-1]
+            directions = random.sample(range(4), 4)  # Случайный порядок направлений
 
-    # Стек для хранения текущей позиции и направления
-    stack = [(cx, cy, 0)]  # (x, y, направление)
+            for i in directions:
+                nx, ny = x + dx[i], y + dy[i]
 
-    while len(stack) > 0:
-        # Получаем текущую позицию и направление
-        (cx, cy, cd) = stack[-1]
-
-        # Проверяем возможность смены направления
-        if len(stack) > 2:
-            # Если предыдущее направление отличается от текущего,
-            # то не можем сменить направление на текущем шаге
-            if cd != stack[-2][2]:
-                dirRange = [cd]  # Только текущее направление
-            else:
-                dirRange = range(4)  # Все направления
-        else:
-            dirRange = range(4)  # Все направления
-
-        # Список для хранения свободных соседей
-        nlst = []
-
-        for i in dirRange:
-            # Рассчитываем координаты соседней ячейки
-            nx = cx + dx[i]
-            ny = cy + dy[i]
-
-            # Проверяем, что соседняя ячейка находится в пределах лабиринта
-            if 0 <= nx < w and 0 <= ny < h:
-                # Если ячейка ещё не посещена (0)
-                if maze[ny][nx] == 0:
-                    ctr = 0  # Счетчик для занятых соседей
+                # Проверяем, что соседняя ячейка в пределах лабиринта и не посещена
+                if 0 <= nx < w and 0 <= ny < h and maze[ny][nx] == 1:
+                    # Проверяем соседей на наличие стены
+                    wall_count = 0
                     for j in range(4):
-                        # Проверяем соседей текущей ячейки
-                        ex = nx + dx[j]
-                        ey = ny + dy[j]
-                        if 0 <= ex < w and 0 <= ey < h:
-                            if maze[ey][ex] == 1:  # Если сосед проходимый
-                                ctr += 1
-                    # Добавляем в список только если у соседа ровно один проходимый сосед
-                    if ctr == 1:
-                        nlst.append(i)
+                        ex, ey = nx + dx[j], ny + dy[j]
+                        if 0 <= ex < w and 0 <= ey < h and maze[ey][ex] == 0:
+                            wall_count += 1
+                    if wall_count == 1:  # Если у соседа только одна проходимая ячейка
+                        maze[ny][nx] = 0  # Прокладываем путь
+                        stack.append((nx, ny))  # Добавляем в стек
+                        break
+            else:
+                stack.pop()  # Возвращаемся назад, если нет доступных направлений
 
-        # Если есть свободные соседи, выбираем случайного и добавляем его в стек
-        if len(nlst) > 0:
-            ir = nlst[
-                random.randint(0, len(nlst) - 1)
-            ]  # Случайный выбор из свободных соседей
-            cx += dx[ir]  # Обновляем координаты
-            cy += dy[ir]
-            maze[cy][cx] = 1  # Устанавливаем ячейку как проходимую
-            stack.append((cx, cy, ir))  # Добавляем новую позицию в стек
-        else:
-            stack.pop()  # Если нет свободных соседей, возвращаемся назад по стеку
+    # Генерируем несколько путей
+    for _ in range(num_paths):
+        cx, cy = random.randint(0, w - 1), random.randint(0, h - 1)
+        carve_path(cx, cy)
 
     # Преобразуем список в массив NumPy для удобства работы
     maze = np.array(maze)
-
-    # Приводим значения к нужному формату (0 - путь, 1 - стена)
-    maze -= 1
-    maze = abs(maze)
 
     # Устанавливаем начальную и конечную точки как проходимые (0)
     maze[0][0] = 0
@@ -124,8 +93,9 @@ def load(filename: str) -> np.ndarray:
 
 if __name__ == "__main__":
     w, h = map(int, input("Введите ширину и высоту лабиринта: ").split())
-    filename = input("Введите имя файла: ")
+    num_paths = int(input("Введите количество путей: "))
+    filename = input("Введите имя файла: ")
 
-    maze = generate(w, h)
+    maze = generate(w, h, num_paths)
 
     save(maze, filename)

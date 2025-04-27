@@ -7,6 +7,10 @@ import numpy as np
 
 from solvers import bfs, dfs, dfs_with_cmp, ucs, bnb, bidirectional_search
 
+from sys import setrecursionlimit
+
+setrecursionlimit(10000)
+
 def main(argv):
     try:
         opts = dict(getopt.getopt(argv, "f:")[0])
