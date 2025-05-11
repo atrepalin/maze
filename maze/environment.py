@@ -103,6 +103,15 @@ class Situation:
         return np.linalg.norm(self.position - self.goal) < np.linalg.norm(
             value.position - value.goal
         )
+    
+    def heuristic(self):
+        """
+        Евклидова метрика от текущей позиции до цели.
+
+        :return: евклидова метрика
+        :rtype: float
+        """
+        return np.linalg.norm(self.position - self.goal)
 
 
 action_map = {0: [0, 1], 1: [1, 0], 2: [-1, 0], 3: [0, -1]}
